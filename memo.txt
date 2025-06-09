@@ -1,0 +1,132 @@
+1. Google reCAPTCHA 管理画面でキーを取得
+https://www.google.com/recaptcha/admin にアクセス
+
+「＋」で新規サイトを登録
+
+reCAPTCHA タイプ：v3
+
+ドメイン：あなたのサイトのドメイン
+
+発行される サイトキー (site key) と シークレットキー (secret key) を控える
+
+2. フロントエンド側の実装
+2-1. ライブラリ読み込み
+html
+コピーする
+編集する
+<!-- HEAD 内などに置く -->
+<script src="https://www.google.com/recaptcha/api.js?render=YOUR_SITE_KEY"></script>
+2-2. フォーム送信時にトークン取得＆付与
+html
+コピーする
+編集する
+<form id="contactForm" action="/api/verify-captcha" method="POST">
+  <!-- 各種フォーム要素 -->
+  <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
+  <button type="submit">送信</button>
+</form>
+
+<script>
+  const siteKey = 'YOUR_SITE_KEY';
+
+  document.getElementById('contactForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    // action 名は任意ですが、管理画面で指定したものと合わせると分析しやすい
+    grecaptcha.ready(() => {
+      grecaptcha.execute(siteKey, {action: 'submit'})
+        .then(token => {
+          // 取得したトークンをフォームにセット
+          document.getElementById('g-recaptcha-response').value = token;
+          // フォームを送信
+          e.target.submit();
+        });
+    });
+  });
+</script>
+3. バックエンド側の実装（Node.js + Express の例）
+3-1. 必要パッケージのインストール
+bash
+コピーする
+編集する
+npm install express axios body-parser
+3-2. サーバーコード例
+js
+コピーする
+編集する
+// index.js
+const express = require('express');
+const axios = require('axios');
+const bodyParser = require('body-parser');
+require('dotenv').config();  // .env で SECRET_KEY を管理
+
+const app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+const RECAPTCHA_SECRET = process.env.RECAPTCHA_SECRET_KEY;  // シークレットキー
+
+app.post('/api/verify-captcha', async (req, res) => {
+  const token = req.body['g-recaptcha-response'];
+  const remoteIp = req.ip;  // オプションで送信元IPを渡せます
+
+  if (!token) {
+    return res.status(400).json({ success: false, message: 'トークンがありません' });
+  }
+
+  try {
+    // Google に検証リクエスト
+    const response = await axios.post(
+      'https://www.google.com/recaptcha/api/siteverify',
+      null,
+      {
+        params: {
+          secret: RECAPTCHA_SECRET,
+          response: token,
+          remoteip: remoteIp
+        }
+      }
+    );
+
+    const data = response.data;
+    // data = { success: true/false, score: 0.0〜1.0, action: 'submit', ... }
+
+    // スコアの閾値は要調整（例：0.5以上を人間とみなす）
+    if (data.success && data.score >= 0.5 && data.action === 'submit') {
+      // CAPTCHA 合格 → 本来の処理へ
+      res.json({ success: true, message: 'CAPTCHA 検証OK', score: data.score });
+    } else {
+      // ボットと判定 or スコア低い
+      res.status(403).json({
+        success: false,
+        message: 'CAPTCHA 検証失敗',
+        score: data.score
+      });
+    }
+  } catch (err) {
+    console.error('reCAPTCHA verification error:', err);
+    res.status(500).json({ success: false, message: 'サーバーエラー' });
+  }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
+注意点
+.env に以下を設定：
+
+ini
+コピーする
+編集する
+RECAPTCHA_SECRET_KEY=あなたのシークレットキー
+score の閾値（上記例では0.5）は、管理画面の アナリティクス を見ながらチューニングしてください
+
+action パラメータは固定値で良いですが、複数フォームがある場合はそれぞれ別名にすると分析しやすいです
+
+4. 運用ポイント
+管理画面でスコア推移をチェック → 誤検知が多ければ閾値を下げる
+
+ボット検知が強すぎて CVR に影響 が出たら、失敗時に画像CAPTCHA（v2）をフォールバックで出す設計も検討
+
+トークンの有効期限は約 2 分ほどなので、フォーム送信は速やかに行う
+
+こんな感じで組めば、ユーザーにほぼ負担をかけずにボット排除が可能です👍 ぜひお試しあれ！
