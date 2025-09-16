@@ -16,7 +16,6 @@ export default defineConfig({
       '.git/**',
       'coverage/**',
       // Project-specific
-      '**/*.external.spec.ts', // 外部リクエスト系はデフォルト除外
     ],
   },
 })
