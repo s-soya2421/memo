@@ -44,5 +44,7 @@ describe('SSR: index page', () => {
     
     expect(html).toContain('Nuxt 3 Starter')
     expect(html).toContain('Memo Nuxt')
+    // Ensure mocked external fetch is reflected in SSR HTML
+    expect(html).toContain('External mocked: yes')
   })
 })
