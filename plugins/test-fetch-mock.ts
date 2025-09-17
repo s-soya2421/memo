@@ -7,6 +7,11 @@ export default defineNuxtPlugin(() => {
 
   const debug = Boolean(process.env.DEBUG_FETCH_MOCK)
 
+  const extraAllowed = (process.env.FETCH_MOCK_ALLOW || '')
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean)
+
   function isLocalHost(hostname: string): boolean {
     const h = hostname.replace(/^\[|\]$/g, '') // strip IPv6 brackets
     if (
@@ -17,7 +22,8 @@ export default defineNuxtPlugin(() => {
       h.startsWith('127.') ||
       h.startsWith('10.') ||
       /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(h) ||
-      h.startsWith('192.168.')
+      h.startsWith('192.168.') ||
+      extraAllowed.includes(h)
     ) return true
     return false
   }
