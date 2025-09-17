@@ -1,10 +1,8 @@
 // Mock external network calls during Vitest runs
-// This plugin is always registered, but only activates when VITEST is set
 export default defineNuxtPlugin(() => {
-  if (!process.env.VITEST) return
+  if (!process.env.VITEST && !process.env.NUXT_TEST) return
 
   const origFetch: typeof fetch | undefined = globalThis.fetch?.bind(globalThis)
-
   if (!origFetch) return
 
   globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
