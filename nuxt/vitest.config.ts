@@ -30,21 +30,10 @@ function styleMockPlugin(): Plugin {
 
 export default defineVitestConfig({
   test: {
+    environment: 'node',
     globals: true,
-    // Use projects to split environments
-    projects: [
-      {
-        name: 'node',
-        environment: 'node',
-        include: ['tests/**/*.spec.ts'],
-        exclude: ['tests/dom/**/*.spec.ts']
-      },
-      {
-        name: 'dom',
-        environment: 'jsdom',
-        include: ['tests/dom/**/*.spec.ts']
-      }
-    ]
+    include: ['tests/**/*.spec.ts']
+    // Per-file environment can be selected with `/* @vitest-environment jsdom */`
   },
   plugins: [styleMockPlugin()]
 })

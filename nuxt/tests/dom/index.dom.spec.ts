@@ -1,3 +1,4 @@
+/* @vitest-environment jsdom */
 // DOM-level rendering test (Nuxt-agnostic component)
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
