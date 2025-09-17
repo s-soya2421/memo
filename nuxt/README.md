@@ -12,6 +12,19 @@
 - サンプル: `tests/ssr.spec.ts` は SSR HTML を検証（`$fetch('/')`）
   - DOM レベル: `tests/dom/index.dom.spec.ts` は `@vue/test-utils` + `jsdom` でページをマウント
 
+### テスト状態フラグ（isTest）
+
+- 目的: テスト時のみログ無効化などの分岐に利用
+- 参照方法:
+  - `useRuntimeConfig().public.isTest`（boolean）
+  - `const { $isTest } = useNuxtApp()`（プラグイン `plugins/flags.ts` が提供）
+- 判定基準: `process.env.VITEST` または `process.env.NUXT_TEST` が真
+- 例（ロガー）:
+  ```ts
+  const { $isTest } = useNuxtApp()
+  const log = (...args: any[]) => { if (!$isTest) console.log('[app]', ...args) }
+  ```
+
 ### Setup
 
 1. Node.js 18+ 推奨（`.nvmrc` 参照）

@@ -10,7 +10,9 @@ export default defineNuxtConfig({
     // Private keys are only available on the server
     // apiSecret: process.env.API_SECRET,
     public: {
-      appName: 'Memo Nuxt'
+      appName: 'Memo Nuxt',
+      // Test-state flag: true when running under Vitest or when NUXT_TEST is set
+      isTest: Boolean(process.env.VITEST || process.env.NUXT_TEST)
     }
   },
 })
