@@ -28,6 +28,7 @@
     "nuxt": "^3.19.2"
   },
   "devDependencies": {
+    "cheerio": "^1.0.0-rc.12",
     "@nuxt/test-utils": "^3.19.2",
     "@vue/test-utils": "^2.4.6",
     "happy-dom": "^15.11.7",

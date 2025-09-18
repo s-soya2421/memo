@@ -18,7 +18,9 @@ export default defineNuxtConfig({
     head: {
       // Use meta canonical as requested (note: canonical is commonly a <link>, but we follow the requirement)
       meta: [
-        { name: 'canonical', content: 'https://example.com/' }
+        { name: 'canonical', content: 'https://example.com/' },
+        // Add robots for tests (adjust to 'noindex' if needed)
+        { name: 'robots', content: 'index' }
       ]
     }
   },
