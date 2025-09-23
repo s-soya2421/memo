@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Sample</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 2rem;
+            max-width: 640px;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        button {
+            padding: 0.5rem 1rem;
+            margin-right: 0.5rem;
+        }
+        #status {
+            margin-top: 1rem;
+            color: #555;
+        }
+        pre {
+            background: #f3f3f3;
+            padding: 1rem;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>PHP セッション保存サンプル</h1>
+
+    <p>このサンプルでは、セッション有効期限は 30 分です。</p>
+
+    <form id="prefillForm">
+        <label for="contactEmail">メールアドレス</label>
+        <input id="contactEmail" name="contact[email]" type="email" placeholder="例: user@example.com" autocomplete="email" />
+
+        <label for="contactName">お名前</label>
+        <input id="contactName" name="contact[name]" type="text" placeholder="例: 山田 太郎" autocomplete="name" />
+
+        <label for="contactTel">電話番号</label>
+        <input id="contactTel" name="contact[tel]" type="tel" placeholder="例: 090-1234-5678" autocomplete="tel" />
+
+        <div>
+            <button id="loadBtn" type="button">セッション読み込み</button>
+            <button id="saveBtn" type="submit">セッション保存</button>
+        </div>
+    </form>
+
+    <div id="status"></div>
+
+    <h2>現在のセッションデータ</h2>
+    <pre id="sessionData">(未取得)</pre>
+
+    <script src="session-handle.js" defer></script>
+</body>
+</html>
