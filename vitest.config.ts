@@ -9,5 +9,11 @@ export default defineConfig({
     // グローバルを使いたい場合は次を有効化:
     // globals: true,
   },
+  // cheerioなどの依存関係をvitestで正しく解決するための設定
+  server: {
+    deps: {
+      inline: ['cheerio'],
+    },
+  },
 })
 
